@@ -19,6 +19,8 @@ Au cours de ce projet, nous avons travaillé sur l'application mobile ainsi que 
 
 ### Fonctionnement général
 
+![image info](./Annexes/architecture_generale.png)
+
 Afin d’enregistrer un nouveau modèle, l'utilisateur doit se munir de son vêtement (parfaitement à sa taille) ainsi que d’un objet témoin. L’objet témoin peut être une carte de visite, une pièce de monnaie ou même une règle graduée du moment que l’utilisateur connaît sa taille exacte. L’utilisateur prend d’abord une photo de son vêtement sur une surface plane, avec l’objet témoin posé à côté ou au-dessus. Il indique ensuite les limites de l’objet témoin à l’aide de deux points ainsi que la distance séparant ces deux points.
 Puis il placera des points de repères sur le vêtement aux endroits indiqués sur le guide. Une fois tous les points entrés, les dimensions sont prêtes à être calculées. Les informations indiquées par l’utilisateur sont alors envoyées au serveur backend, qui va se charger de calculer les dimensions clés du vêtement, comme le tour de hanches, la hauteur… Le modèle est ensuite enregistré en base de données, il est prêt à être comparé aux modèles des sites marchands.
 
@@ -57,20 +59,28 @@ Nous allons vous présenter les différentes interfaces ainsi que leur fonctionn
 
 #### 1. Interface de connexion
 
+![image info](./Annexes/frontend_connexion.jpg)
+
 Voici l’interface de connexion d’un utilisateur. Elle ne représente pas le cœur de notre projet, c’est pourquoi nous ne l’avons pas fait de manière exhaustive. En effet, celle-ci ne réalise pas une authentification complète. Elle ne communique pas avec le Backend et redirige simplement sur l’espace l’écran d'accueil qui n’est donc pas personnalisé.
 
 
 #### 2. Écran d’accueil
+
+![image info](./Annexes/frontend_modeles.jpg)
 
 Voici l’interface qui permet à l'utilisateur de visualiser les modèles qu’il à déja enregistrés. Cette page affiche de manière itérative les modèles contenus dans un tableau. La version que nous aurions voulu réaliser aurait fait un appel au backend pour récupérer les modèles de l’utilisateur connecté, et ensuite pouvoir afficher les modèles de l’utilisateur courant.
 Lorsque celui-ci veut enregistrer un nouveau modèle, il peut alors le faire en appuyant sur le bouton flottant avec l’appareil photo.
 
 #### 3. Prise de photo
 
+![image info](./Annexes/frontend_photo.jpg)
+
 Pour enregistrer un nouveau modèle, l’utilisateur doit avant tout prendre son habit en photo. Cette interface est un appareil photo intégré à l’application qui affiche à l’écran directement ce que voit la caméra. Pour ceci, flutter permet d’initialiser les caméra du téléphone grâce à ses librairies.
 Avant d’afficher l’appareil photo nous aurions voulu mettre une page d’informations qui permettrait d’expliquer à l’utilisateur de bien poser l’habit à plat, de prendre la photo d’au dessus, et de poser l’objet témoins à coté.
 
 #### 4. Placement des points de repère
+
+![image info](./Annexes/frontend_pointsreperes.jpg)
 
 Après avoir pris la photo, l’utilisateur arrive sur l’interface où il devra placer les différents points de repères en suivant les instructions. 
 En effet, nous aurions voulu insérer un onglet coulissant qui expliquerait comment placer les points. Il faudrait les placer dans un ordre précis selon le type d’habit, et surtout à des endroits bien précis en suivant l’exemple que nous proposerions. 
@@ -79,6 +89,8 @@ Pour chaque point placé, les coordonnées de ces derniers sont enregistrées da
 
 
 #### 5. Validation et objet de référence
+
+![image info](./Annexes/frontend_echelle.jpg)
 
 Lorsque l’utilisateur appuie sur le bouton “suivant” de l’interface précédente, une fenêtre de dialogue apparaît alors pour demander à l’utilisateur la taille de l’objet de référence qu’il à indiquer sur l’image. La taille de l’objet est la distance entre les deux extrémités indiqués par les deux points de repères placés sur ce dernier. Cette distance sera donc la distance de référence et qui permettra alors au backend de mesurer toutes les autres dimensions nécessaires.
 Lorsque l’utilisateur valide la taille qu’il a saisie, l’application envoie une requête au backend contenant les coordonnées de tous les points par rapport à l’image ainsi que la taille de l’objet de référence. Lorsque la réponse que l’application reçoit atteste que la requête a fonctionné comme il le faut, alors nous sommes redirigés sur l’écran d'accueil. 
@@ -89,6 +101,9 @@ Nous aurions souhaité pouvoir effectuer un vrai enregistrement de modèle afin 
 #### Fonctionnement du serveur
 
 L'architecture de notre application serveur est la suivante :
+
+![image info](./Annexes/backend_architecture.png)
+
 - fitsize : Configuration générale du projet : fichiers de configuration, de paramétrage et de définition des liens (endpoints, la liste est disponible dans les documents techniques)
 - fixtures : Contient les fichiers utilisés afin de générer une base de données par défaut (la procédure est détaillée dans le guide d'utilisation du système FitSize). 
 - polls :  Définition des éléments nécessaires à la conception des éléments stockés dans la base de données : models, serializers, views
@@ -106,23 +121,41 @@ La liste des modèles est la suivante :
 Nous allons détailler le contenu de l'application en prenant comme exemple l'instance UserModel stockée dans la base de données.
 En suivant l'architecture que nous avons établie en début de projet, nous avons défini les Models qui sont utilisés par Django afin de structurer et de permettre la manipulation des données de notre application. C'est ce qui définit les types et champs des instances stockées dans la base de données. Nous utilisons par ailleurs des relations entre nos Models (One to Many).
 
+![image info](./Annexes/backend_model.png)
+
 Les Serializers de Django REST Framework, définis en fonction des Models, permettent de convertir les instances de la base de données en types Python natifs, qui sont par la suite traités sous le format JSON lors des requêtes et des accès via les endpoints.
+
+![image info](./Annexes/backend_seializer.png)
 
 Les Views permettent d'établir la logique lors des accès aux endpoints (URI) par l'utilisateur de l'application (méthodes POST, GET, DELETE …)  et pour le retour des réponses du serveur.
 Nous avons utilisé des ViewSet disponibles dans le module Django REST Framework, qui permettent de fournir un set de méthodes "par défaut", telles que l'obtention d'une ressource, de toutes les ressources d'une certaine catégorie, ou la suppression d'une ressource. Nous pouvons par ailleurs rajouter nos propres endpoints, avec un nom personnalisé et un appel à une fonction définissant le comportement lors de l'utilisation du endpoint.
 
 Dans notre projet, nous avons ajouté un endpoint personnalisé afin de pouvoir convertir le champ dimension  du model UserModel tel qu'envoyé par l'application mobile au backend (voir la méthode saveFromKeyPoints, définissant le comportement de la méthode POST pour le endpoint polls/usermodel/savedimensions ).
 
+![image info](./Annexes/backend_viewset.png)
+
 Les données envoyées par l'application mobile (coordonnées de points pour l'objet témoin, distance entre ces deux points et les coordonnées des points pour le vêtement) sont envoyées suivant une syntaxe fixée et stockées dans une string.
 L'application utilise donc le endpoint polls/usermodel/savedimensions et le serveur réalise l'action de décodage du message pour obtenir les données et le produit en croix afin de sauvegarder le UserModel avec les dimensions réelles du vêtement déterminées grâce aux informations de l'objet témoin. 
 
 Les endpoints génériques sont possibles grâce à l'utilisation d'un routeur fourni par le Django REST Framework, le SimpleRouter() . Il fournit des endpoints de création, d'accès, de mise à jour et de suppression de ressources. Les endpoints génériques sont créés à partir du nom et de la View qui sont indiqués en paramètre lors de l'enregistrement de la route par le routeur. La liste des endpoints disponibles est disponible dans les documents techniques.
+
+![image info](./Annexes/backend_urls.png)
 
 #### Tests
 
 Nous avons réalisé majoritairement des tests de non régression afin de vérifier le bon fonctionnement et la logique de l'accès aux données de la base de données via les endpoints.
 Pour cela, nous avons utilisé l'outil Factory Boy. Il permet la mise en place de Factories qui automatisent la création de Models pour les tests. Les Models créés au cours des tests grâce à ces Factories sont sauvegardés dans une base de données qui est vidée à l'issue des tests.
 Le module est fourni avec l'outil Faker, qui permet de générer diverses fake data, afin d'obtenir des instances différentes à chaque lancement des tests.
+
+![image info](./Annexes/backend_factory.png)
+
+Dans cet exemple de test, on observe que l'appel à la Factory de UserModel nécessite également l'appel à des Sub Factories de part les relations de UserModel avec les Models User et ClothingType. Au cours de nos tests, nous devons donc nous assurer de sauvegarder dans la base de données les champs correspondants avant de procéder à la sauvegarde de UserModel, car UserModel doit posséder dans ses champs un User et un ClothingType déjà sauvegardés dans la base de données afin d'être créé.
+
+![image info](./Annexes/backend_test.png)
+
+Au moment d'écriture de ces lignes, nous possédons 31 tests, couvrant l'instanciation des Models,  l'instanciation des Serializers, et l'utilisation des endpoints disponibles (création, suppression, accès à une/des données)
+
+![image info](./Annexes/backend_testspasses.png)
 
 #### Améliorations possibles
 
@@ -178,4 +211,31 @@ Pour la partie backend, nous avons développé avec Visual Studio Code et avons 
 
 Ci dessous le récapitulatif fourni par GitHub concernant le nombre de commits effectués et le nombre de lignes de code écrites durant le projet.
 
+
+![image info](./Annexes/metriques_front.jpg)
+![image info](./Annexes/metriques_back.jpg)
+
 ## Conclusion
+
+A l'issue de ce projet, nous n'avons pas réalisé tous les objectifs que nous nous étions fixés, cependant nous avons énormément appris grâce à sa pluridisciplinarité. Nous avons eu à réaliser la conception, la veille technologique, une API Web et une application mobile sur des technologies nouvelles.
+Nous avons été libres durant ce mois de Projet de Fin d'Études,  ce qui nous a permis d'expérimenter, de prendre des risques, et de se faire une meilleure idée de ce en quoi consiste notre métier.
+Nous avons pu travailler sur une application qui répond à un besoin majeur pour les utilisateurs de sites de vente de vêtement en ligne, et qui est porté par une équipe avec qui il a été agréable de travailler.
+Nous avons établi les bases et le squelette de ce que deviendra l'application FitSize, et nous sommes curieux de voir son évolution.
+
+## Bibliographie
+
+- [FitSize]
+- [Django]
+- [Django rest framework]
+- [Python]
+- [SQLite]
+- [Flutter]
+- [Dart]
+
+[FitSize]: http://fitsize.fr/
+[Django]: https://www.djangoproject.com/
+[Django rest framework]: https://www.django-rest-framework.org/
+[Python]: https://www.python.org/
+[SQLite]: https://www.sqlite.org/index.html
+[Flutter]: https://flutter.dev/
+[Dart]: https://dart.dev/
