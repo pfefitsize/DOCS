@@ -23,14 +23,33 @@ Afin d’enregistrer un nouveau modèle, l'utilisateur doit se munir de son vêt
 Puis il placera des points de repères sur le vêtement aux endroits indiqués sur le guide. Une fois tous les points entrés, les dimensions sont prêtes à être calculées. Les informations indiquées par l’utilisateur sont alors envoyées au serveur backend, qui va se charger de calculer les dimensions clés du vêtement, comme le tour de hanches, la hauteur… Le modèle est ensuite enregistré en base de données, il est prêt à être comparé aux modèles des sites marchands.
 
 ### Frontend
+
 Le frontend est la partie avec laquelle l’utilisateur va interagir et se présente ici sous la forme d’une application mobile. 
 Nous avons utilisé Le framework Flutter, avec le langage Dart pour le développement de cette application. Cette technologie n’a pas été un choix de notre part, mais de la part du client. L’avantage majeur de cette technologie est qu’elle permet le développement multiplateforme. En effet, le client souhaitait que l’application soit disponible sous android et sous IOS.
 L’utilisation souhaitée de cette application est de permettre à l’utilisateur de prendre en photo un habit avec un objet témoin placé à côté de ce dernier. Il faut ensuite placer des points de repères aux endroits stratégiques sur la photo, comme indiqué dans l’exemple. L’application va alors envoyer les coordonnées des points à la partie backend pour que celle-ci calcul les dimensions de l’habit. Une fois enregistré l’utilisateur pourra alors retrouver ses modèles sur la page principale de l’application. Les modèles sont enregistrés sur la base de données du serveur afin que l’utilisateur puisse changer de téléphone ou encore supprimer et réinstaller l’application sans perdre ses données. L’accès à ces données se fait donc par le biais d’une authentification sur l’application.
 
+### Backend
 
+Le système FitSize nécessitait un serveur afin de pouvoir gérer les informations envoyées par l'application mobile. 
+En effet, l'acheteur qui effectue ses achats sur le site de vente en ligne a besoin de transmettre les dimensions d'un vêtement de sa garde robe qui lui va, et l'administrateur qui gère la boutique de vêtements a besoin de transmettre les dimensions et les tailles des vêtements qu'il vend. 
+L'ensemble de ces informations rend possible la comparaison entre la taille du vêtement de l'acheteur avec la taille de l'article sur le site de vente en ligne.
+
+Dès le début du projet, l'équipe FitSize nous a informé de leur désir d'incorporer de l'intelligence artificielle et la reconnaissance par ordinateur (Computer Vision) afin de pouvoir automatiser la reconnaissance des dimensions du vêtement lorsque l'utilisateur le prend en photo avant l'envoi d'informations au serveur.
+Pour le choix du langage utilisé pour le backend, nous avions comme contrainte l'utilisation de Python de part la volonté de l'équipe de pouvoir utiliser la bibliothèque CV2 pour Python, qui fournit des fonctions de traitement d'images en temps réel.
+
+De par les contraintes en temps, nous avons eu besoin d'un framework en Python permettant de construire rapidement des interfaces web et un serveur. Nous avons donc opté pour le framework Django, basé sur le développement rapide et le design simple.
+
+	La base de données par défaut est SQLite, qui a pour principal avantage sa facilité d'utilisation et ses fonctionnalités de création de base de données automatique. Cette technologie nous a donc semblé être idéale afin de concevoir une première version de l'application en local.
+
+Au cours du développement de l'application, nous avons utilisé divers modules nous permettant d'atteindre nos objectifs :
+- Django REST framework, un toolkit permettant de mettre en place une gestion de la base de données depuis l'application
+- Factory Boy, un module permettant de créer des tests aléatoires et des instances de modèles facilement
+
+Nous détaillerons l'utilisation de ces technologies dans la suite de ce rapport.
 
 
 ## Réalisations techniques
+
 ### Frontend
 
 Nous allons vous présenter les différentes interfaces ainsi que leur fonctionnement. L’application est globalement constitué de 4 interfaces différentes qui ne sont malheureusement pas toutes terminées par manque de temps. 
@@ -64,6 +83,58 @@ Pour chaque point placé, les coordonnées de ces derniers sont enregistrées da
 Lorsque l’utilisateur appuie sur le bouton “suivant” de l’interface précédente, une fenêtre de dialogue apparaît alors pour demander à l’utilisateur la taille de l’objet de référence qu’il à indiquer sur l’image. La taille de l’objet est la distance entre les deux extrémités indiqués par les deux points de repères placés sur ce dernier. Cette distance sera donc la distance de référence et qui permettra alors au backend de mesurer toutes les autres dimensions nécessaires.
 Lorsque l’utilisateur valide la taille qu’il a saisie, l’application envoie une requête au backend contenant les coordonnées de tous les points par rapport à l’image ainsi que la taille de l’objet de référence. Lorsque la réponse que l’application reçoit atteste que la requête a fonctionné comme il le faut, alors nous sommes redirigés sur l’écran d'accueil. 
 Nous aurions souhaité pouvoir effectuer un vrai enregistrement de modèle afin que l’on puisse ensuite voir le nouveau modèle s’afficher sur l’écran d'accueil.
+
+### Backend
+
+#### Fonctionnement du serveur
+
+L'architecture de notre application serveur est la suivante :
+- fitsize : Configuration générale du projet : fichiers de configuration, de paramétrage et de définition des liens (endpoints, la liste est disponible dans les documents techniques)
+- fixtures : Contient les fichiers utilisés afin de générer une base de données par défaut (la procédure est détaillée dans le guide d'utilisation du système FitSize). 
+- polls :  Définition des éléments nécessaires à la conception des éléments stockés dans la base de données : models, serializers, views
+- tests : Fichiers de tests unitaire, de non-régression et définition des modèles utilisés par les tests
+
+En ce qui concerne la conception de la base de données et des modèles qui la constituent, nous avons établi la structure qui est répertoriée en annexe.
+La liste des modèles est la suivante :
+- User : contient les données relatives à un compte (login et mot de passe)
+- Company : contient les données relatives à la compagnie qui produit des vêtements (nom, addresse)
+- Size : représente une taille de vêtements (contient un nom/label, et une origine)
+- ClothingType : Type de vêtement, contient un nom ainsi qu' un tableau de points qui sont utilisés dans l'interface afin de montrer à l'utilisateur de l'application mobile quels sont les points à indiquer sur le vêtement
+- UserModel : représente le vêtement de l'acheteur d'un vêtement, celui de sa garde robe qu'il utilise afin d'informer des dimensions qu'il souhaite avoir pour le vêtement qu'il veut acheter. Contient un nom, des dimensions et est en lien avec un compte utilisateur (User) et un type de vêtement (ClothingType)
+- CompanyModel : représente le modèle qui est vendu par la compagnie. Contient dans ses champs une couleur, des dimensions et est en lien avec un type de vêtement (ClothingType), une Companie (Company) et une taille (Size).
+
+	Nous allons détailler le contenu de l'application en prenant comme exemple l'instance UserModel stockée dans la base de données.
+En suivant l'architecture que nous avons établie en début de projet, nous avons défini les Models qui sont utilisés par Django afin de structurer et de permettre la manipulation des données de notre application. C'est ce qui définit les types et champs des instances stockées dans la base de données. Nous utilisons par ailleurs des relations entre nos Models (One to Many).
+
+
+
+	Les Serializers de Django REST Framework, définis en fonction des Models, permettent de convertir les instances de la base de données en types Python natifs, qui sont par la suite traités sous le format JSON lors des requêtes et des accès via les endpoints.
+
+
+
+
+	Les Views permettent d'établir la logique lors des accès aux endpoints (URI) par l'utilisateur de l'application (méthodes POST, GET, DELETE …)  et pour le retour des réponses du serveur.
+Nous avons utilisé des ViewSet disponibles dans le module Django REST Framework, qui permettent de fournir un set de méthodes "par défaut", telles que l'obtention d'une ressource, de toutes les ressources d'une certaine catégorie, ou la suppression d'une ressource. Nous pouvons par ailleurs rajouter nos propres endpoints, avec un nom personnalisé et un appel à une fonction définissant le comportement lors de l'utilisation du endpoint.
+
+	Dans notre projet, nous avons ajouté un endpoint personnalisé afin de pouvoir convertir le champ dimension  du model UserModel tel qu'envoyé par l'application mobile au backend (voir la méthode saveFromKeyPoints, définissant le comportement de la méthode POST pour le endpoint polls/usermodel/savedimensions ).
+
+
+
+
+
+Les données envoyées par l'application mobile (coordonnées de points pour l'objet témoin, distance entre ces deux points et les coordonnées des points pour le vêtement) sont envoyées suivant une syntaxe fixée et stockées dans une string. 
+L'application utilise donc le endpoint polls/usermodel/savedimensions et le serveur réalise l'action de décodage du message pour obtenir les données et le produit en croix afin de sauvegarder le UserModel avec les dimensions réelles du vêtement déterminées grâce aux informations de l'objet témoin. 
+
+Les endpoints génériques sont possibles grâce à l'utilisation d'un routeur fourni par le Django REST Framework, le SimpleRouter() . Il fournit des endpoints de création, d'accès, de mise à jour et de suppression de ressources. Les endpoints génériques sont créés à partir du nom et de la View qui sont indiqués en paramètre lors de l'enregistrement de la route par le routeur. La liste des endpoints disponibles est disponible dans les documents techniques.
+
+
+
+
+#### Tests
+
+Nous avons réalisé majoritairement des tests de non régression afin de vérifier le bon fonctionnement et la logique de l'accès aux données de la base de données via les endpoints.
+Pour cela, nous avons utilisé l'outil Factory Boy. Il permet la mise en place de Factories qui automatisent la création de Models pour les tests. Les Models créés au cours des tests grâce à ces Factories sont sauvegardés dans une base de données qui est vidée à l'issue des tests.
+Le module est fourni avec l'outil Faker, qui permet de générer diverses fake data, afin d'obtenir des instances différentes à chaque lancement des tests.
 
 
 ## Gestion de projet
