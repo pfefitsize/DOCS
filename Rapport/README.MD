@@ -2,7 +2,22 @@
 
 ## Rappel du sujet
 
+### Contexte
+
+L'avènement des boutiques de prêt à porter en ligne à apporter de nouveaux besoins aux consommateurs. La solution FitSize a été imaginée pour répondre à ces besoins en facilitant au maximum le choix de la taille de nos vêtements de rêve et en limitant le nombre de retours.
+
+### Présentation de la solution
+
+La solution FitSize comme nous l’avons imaginé est composé de 3 applications :
+Une application mobile permettant à l’utilisateur d’enregistrer ses modèles. L’utilisateur sera amené à prendre une photo de son vêtement accompagné d’un objet témoin (carte de crédit, pièce de monnaie…) sur une surface plane. Il indiquera ensuite la dimension de l’objet témoin ainsi que ses limites en plaçant 2 points sur l’image. Enfin, il placera des points de repères déterminant les dimensions de l’habit en se basant sur une photo guide.
+Un serveur où seront effectués les calculs et qui enregistrera les données dans la base de données.
+Un plugin web qui permet à un utilisateur de trouver la taille idéale pour le modèle qu’il consulte sur un site marchand.
+
+Au cours de ce projet, nous avons travaillé sur l'application mobile ainsi que le backend, mais pas sur le plugin web.
+
 ## Architecture technique
+
+
 
 ## Résolution technique
 
