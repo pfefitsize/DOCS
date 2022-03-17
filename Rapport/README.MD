@@ -125,7 +125,7 @@ En suivant l'architecture que nous avons établie en début de projet, nous avon
 
 Les Serializers de Django REST Framework, définis en fonction des Models, permettent de convertir les instances de la base de données en types Python natifs, qui sont par la suite traités sous le format JSON lors des requêtes et des accès via les endpoints.
 
-![image info](./Annexes/backend_seializer.png)
+![image info](./Annexes/backend_serializer.png)
 
 Les Views permettent d'établir la logique lors des accès aux endpoints (URI) par l'utilisateur de l'application (méthodes POST, GET, DELETE …)  et pour le retour des réponses du serveur.
 Nous avons utilisé des ViewSet disponibles dans le module Django REST Framework, qui permettent de fournir un set de méthodes "par défaut", telles que l'obtention d'une ressource, de toutes les ressources d'une certaine catégorie, ou la suppression d'une ressource. Nous pouvons par ailleurs rajouter nos propres endpoints, avec un nom personnalisé et un appel à une fonction définissant le comportement lors de l'utilisation du endpoint.
