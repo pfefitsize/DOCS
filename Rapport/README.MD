@@ -16,6 +16,12 @@ Un plugin web qui permet à un utilisateur de trouver la taille idéale pour le 
 Au cours de ce projet, nous avons travaillé sur l'application mobile ainsi que le backend, mais pas sur le plugin web.
 
 ## Architecture technique
+
+### Fonctionnement général
+
+Afin d’enregistrer un nouveau modèle, l'utilisateur doit se munir de son vêtement (parfaitement à sa taille) ainsi que d’un objet témoin. L’objet témoin peut être une carte de visite, une pièce de monnaie ou même une règle graduée du moment que l’utilisateur connaît sa taille exacte. L’utilisateur prend d’abord une photo de son vêtement sur une surface plane, avec l’objet témoin posé à côté ou au-dessus. Il indique ensuite les limites de l’objet témoin à l’aide de deux points ainsi que la distance séparant ces deux points.
+Puis il placera des points de repères sur le vêtement aux endroits indiqués sur le guide. Une fois tous les points entrés, les dimensions sont prêtes à être calculées. Les informations indiquées par l’utilisateur sont alors envoyées au serveur backend, qui va se charger de calculer les dimensions clés du vêtement, comme le tour de hanches, la hauteur… Le modèle est ensuite enregistré en base de données, il est prêt à être comparé aux modèles des sites marchands.
+
 ### Frontend
 Le frontend est la partie avec laquelle l’utilisateur va interagir et se présente ici sous la forme d’une application mobile. 
 Nous avons utilisé Le framework Flutter, avec le langage Dart pour le développement de cette application. Cette technologie n’a pas été un choix de notre part, mais de la part du client. L’avantage majeur de cette technologie est qu’elle permet le développement multiplateforme. En effet, le client souhaitait que l’application soit disponible sous android et sous IOS.
