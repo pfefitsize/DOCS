@@ -39,7 +39,7 @@ Pour le choix du langage utilisé pour le backend, nous avions comme contrainte 
 
 De par les contraintes en temps, nous avons eu besoin d'un framework en Python permettant de construire rapidement des interfaces web et un serveur. Nous avons donc opté pour le framework Django, basé sur le développement rapide et le design simple.
 
-	La base de données par défaut est SQLite, qui a pour principal avantage sa facilité d'utilisation et ses fonctionnalités de création de base de données automatique. Cette technologie nous a donc semblé être idéale afin de concevoir une première version de l'application en local.
+La base de données par défaut est SQLite, qui a pour principal avantage sa facilité d'utilisation et ses fonctionnalités de création de base de données automatique. Cette technologie nous a donc semblé être idéale afin de concevoir une première version de l'application en local.
 
 Au cours du développement de l'application, nous avons utilisé divers modules nous permettant d'atteindre nos objectifs :
 - Django REST framework, un toolkit permettant de mettre en place une gestion de la base de données depuis l'application
@@ -103,38 +103,36 @@ La liste des modèles est la suivante :
 - UserModel : représente le vêtement de l'acheteur d'un vêtement, celui de sa garde robe qu'il utilise afin d'informer des dimensions qu'il souhaite avoir pour le vêtement qu'il veut acheter. Contient un nom, des dimensions et est en lien avec un compte utilisateur (User) et un type de vêtement (ClothingType)
 - CompanyModel : représente le modèle qui est vendu par la compagnie. Contient dans ses champs une couleur, des dimensions et est en lien avec un type de vêtement (ClothingType), une Companie (Company) et une taille (Size).
 
-	Nous allons détailler le contenu de l'application en prenant comme exemple l'instance UserModel stockée dans la base de données.
+Nous allons détailler le contenu de l'application en prenant comme exemple l'instance UserModel stockée dans la base de données.
 En suivant l'architecture que nous avons établie en début de projet, nous avons défini les Models qui sont utilisés par Django afin de structurer et de permettre la manipulation des données de notre application. C'est ce qui définit les types et champs des instances stockées dans la base de données. Nous utilisons par ailleurs des relations entre nos Models (One to Many).
 
+Les Serializers de Django REST Framework, définis en fonction des Models, permettent de convertir les instances de la base de données en types Python natifs, qui sont par la suite traités sous le format JSON lors des requêtes et des accès via les endpoints.
 
-
-	Les Serializers de Django REST Framework, définis en fonction des Models, permettent de convertir les instances de la base de données en types Python natifs, qui sont par la suite traités sous le format JSON lors des requêtes et des accès via les endpoints.
-
-
-
-
-	Les Views permettent d'établir la logique lors des accès aux endpoints (URI) par l'utilisateur de l'application (méthodes POST, GET, DELETE …)  et pour le retour des réponses du serveur.
+Les Views permettent d'établir la logique lors des accès aux endpoints (URI) par l'utilisateur de l'application (méthodes POST, GET, DELETE …)  et pour le retour des réponses du serveur.
 Nous avons utilisé des ViewSet disponibles dans le module Django REST Framework, qui permettent de fournir un set de méthodes "par défaut", telles que l'obtention d'une ressource, de toutes les ressources d'une certaine catégorie, ou la suppression d'une ressource. Nous pouvons par ailleurs rajouter nos propres endpoints, avec un nom personnalisé et un appel à une fonction définissant le comportement lors de l'utilisation du endpoint.
 
-	Dans notre projet, nous avons ajouté un endpoint personnalisé afin de pouvoir convertir le champ dimension  du model UserModel tel qu'envoyé par l'application mobile au backend (voir la méthode saveFromKeyPoints, définissant le comportement de la méthode POST pour le endpoint polls/usermodel/savedimensions ).
+Dans notre projet, nous avons ajouté un endpoint personnalisé afin de pouvoir convertir le champ dimension  du model UserModel tel qu'envoyé par l'application mobile au backend (voir la méthode saveFromKeyPoints, définissant le comportement de la méthode POST pour le endpoint polls/usermodel/savedimensions ).
 
-
-
-
-
-Les données envoyées par l'application mobile (coordonnées de points pour l'objet témoin, distance entre ces deux points et les coordonnées des points pour le vêtement) sont envoyées suivant une syntaxe fixée et stockées dans une string. 
+Les données envoyées par l'application mobile (coordonnées de points pour l'objet témoin, distance entre ces deux points et les coordonnées des points pour le vêtement) sont envoyées suivant une syntaxe fixée et stockées dans une string.
 L'application utilise donc le endpoint polls/usermodel/savedimensions et le serveur réalise l'action de décodage du message pour obtenir les données et le produit en croix afin de sauvegarder le UserModel avec les dimensions réelles du vêtement déterminées grâce aux informations de l'objet témoin. 
 
 Les endpoints génériques sont possibles grâce à l'utilisation d'un routeur fourni par le Django REST Framework, le SimpleRouter() . Il fournit des endpoints de création, d'accès, de mise à jour et de suppression de ressources. Les endpoints génériques sont créés à partir du nom et de la View qui sont indiqués en paramètre lors de l'enregistrement de la route par le routeur. La liste des endpoints disponibles est disponible dans les documents techniques.
-
-
-
 
 #### Tests
 
 Nous avons réalisé majoritairement des tests de non régression afin de vérifier le bon fonctionnement et la logique de l'accès aux données de la base de données via les endpoints.
 Pour cela, nous avons utilisé l'outil Factory Boy. Il permet la mise en place de Factories qui automatisent la création de Models pour les tests. Les Models créés au cours des tests grâce à ces Factories sont sauvegardés dans une base de données qui est vidée à l'issue des tests.
 Le module est fourni avec l'outil Faker, qui permet de générer diverses fake data, afin d'obtenir des instances différentes à chaque lancement des tests.
+
+#### Améliorations possibles
+
+Les réalisations effectuées pour le serveur sont finalement assez minimalistes, nous avons cependant établi les bases du projet et profité des avantages du framework Django afin de fournir le comportement attendu d'une API Web.
+Certaines améliorations possibles sont :
+- Une comparaison des UserModels avec les CompanyModels
+- Une sécurité pour la connexion de l'utilisateur à l'application
+- Une utilisation d'une autre base de données. SQLite est adéquat pour une utilisation en local, et il nous a permis de gagner du temps afin de nous focaliser sur ce que nous ne connaissions pas du framework Django, cependant une base de donnée telle que PostgreSQL sera indispensable lors de la mise en production du serveur et de l'application.
+
+Ces modifications peuvent être facilement mises en place de par les fonctionnalités de Django qui permettent une mise à jour rapide du projet.
 
 
 ## Gestion de projet
@@ -173,6 +171,11 @@ Notre communication avec le client s’est principalement effectuée à travers 
 
 ## Outils
 
+Nous avons utilisé Android Studio comme environnement de développement pour la partie frontend. C’est l'environnement de développement le plus adapté et simple d’utilisation pour le besoin que nous avions.
+Pour la partie backend, nous avons développé avec Visual Studio Code et avons utilisé Postman pour tester le bon fonctionnement des requêtes. Nous avons choisi ces outils car nous les avions déjà utilisés auparavant et avions donc de bonnes bases.
+
 ## Métriques logiciels
+
+Ci dessous le récapitulatif fourni par GitHub concernant le nombre de commits effectués et le nombre de lignes de code écrites durant le projet.
 
 ## Conclusion
