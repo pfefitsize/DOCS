@@ -19,7 +19,7 @@ Au cours de ce projet, nous avons travaillé sur l'application mobile ainsi que 
 
 
 
-## Résolution technique
+## Réalisations techniques
 
 ## Gestion de projet
 
