@@ -4,7 +4,7 @@
 
 ### Contexte
 
-L'avènement des boutiques de prêt à porter en ligne à apporter de nouveaux besoins aux consommateurs. La solution FitSize a été imaginée pour répondre à ces besoins en facilitant au maximum le choix de la taille de nos vêtements de rêve et en limitant le nombre de retours.
+L'avènement des boutiques de prêt à porter en ligne a apporter de nouveaux besoins aux consommateurs. La solution FitSize a été imaginée pour répondre à ces besoins en facilitant au maximum le choix de la taille de nos vêtements de rêve et en limitant le nombre de retours.
 
 ### Présentation de la solution
 
